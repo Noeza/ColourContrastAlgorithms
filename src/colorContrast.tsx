@@ -1,7 +1,6 @@
 import React, { FC, useState } from "react";
 import { SketchPicker } from "react-color";
 import styled from "styled-components";
-import "./styles.css";
 
 const Container = styled.div`
   font-family: sans-serif;
