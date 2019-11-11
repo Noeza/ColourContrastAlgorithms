@@ -1,7 +1,11 @@
 import React, { FC, useState } from "react";
 import { SketchPicker } from "react-color";
 import styled from "styled-components";
-
+import { isColorContrastValid } from "./colorVisibilityAlgorithm";
+import {
+  luminosityContrastRatio,
+  isColorContrastValid as isLuminosityColorContrastValid
+} from "./luminosityRatioAlgorithm";
 const Container = styled.div`
   font-family: sans-serif;
   text-align: center;
@@ -19,10 +23,21 @@ const BackgroundContainer = styled.div<{ color: string }>(
 `
 );
 
-type Color = { r: number; g: number; b: number };
+const RightContainer = styled.div`
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+`;
 
-const MAX_BRIGHTNESS_DIFFERENCE = 125;
-const MAX_COLOR_DIFFERENCE = 500;
+const Header = styled.h3`
+  text-decoration: underline;
+`;
+
+const Paragraph = styled.p<{ valid: boolean }>`
+  color: ${({ valid }) => (valid ? "#101010" : "#FF0000")};
+`;
+
+export type Color = { r: number; g: number; b: number };
 
 export function hexToRGBObject(hex: string) {
   var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -34,65 +49,42 @@ export function hexToRGBObject(hex: string) {
 
   return { r, g, b };
 }
-/* The Color Contrast Algorith Starts here:
-  We calculate the color brightness and
-  color difference
-*/
-function getBrightness(color: Color) {
-  const sum = color.r * 299 + color.g * 587 + color.b * 114;
-  return Math.round(sum / 1000);
-}
-
-const getColorDifference = (color1: Color, color2: Color) => {
-  const brightness1 = getBrightness(color1);
-  const brightness2 = getBrightness(color2);
-  const brightnessDifference = Math.abs(brightness1 - brightness2);
-
-  const colorDifference =
-    Math.max(color1.r, color2.r) -
-    Math.min(color1.r, color2.r) +
-    (Math.max(color1.g, color2.g) - Math.min(color1.g, color2.g)) +
-    (Math.max(color1.b, color2.b) - Math.min(color1.b, color2.b));
-
-  return { brightnessDifference, colorDifference };
-};
-
-export const isColorContrastValid = (color1: Color, color2: Color) => {
-  const { brightnessDifference, colorDifference } = getColorDifference(
-    color1,
-    color2
-  );
-  return (
-    brightnessDifference >= MAX_BRIGHTNESS_DIFFERENCE &&
-    colorDifference >= MAX_COLOR_DIFFERENCE
-  );
-};
 
 export const ColorContrast: FC = () => {
   const [color, setColor] = useState<string>("#101010");
-
-  const valid = isColorContrastValid(
-    hexToRGBObject("#FFFFFF"),
-    hexToRGBObject(color)
-  );
+  const whiteText = hexToRGBObject("#FFFFFF");
+  const backgroundColor = hexToRGBObject(color);
+  const valid = isColorContrastValid(whiteText, backgroundColor);
+  const validRatio = isLuminosityColorContrastValid(whiteText, backgroundColor);
+  const ratio = luminosityContrastRatio(whiteText, backgroundColor).toFixed(2);
 
   return (
     <Container>
-      <h1>Colour Visibility Algorithm</h1>
+      <h1>Colour Visibility Algorithms</h1>
       <div style={{ display: "flex", flexDirection: "row" }}>
         <SketchPicker
           color={color}
           onChangeComplete={color => setColor(color.hex)}
         />
-        <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+        <RightContainer>
+          <Header>Color Visibility Algorithm</Header>
           <BackgroundContainer color={color}>
             Hi I am the foreground text.
           </BackgroundContainer>
-          <p>
+          <Paragraph valid={valid}>
             {valid ? "Great" : "Poor"} visibility between text and background
             colors.
-          </p>
-        </div>
+          </Paragraph>
+          <Header>Luminosity Contrast Ratio Algorithm</Header>
+          <BackgroundContainer color={color}>
+            Hi I am the foreground text.
+          </BackgroundContainer>
+          <p>Contrast Ratio - {ratio}: 1</p>
+          <Paragraph valid={validRatio}>
+            {validRatio ? "Great" : "Poor"} visibility between text and
+            background colors.
+          </Paragraph>
+        </RightContainer>
       </div>
     </Container>
   );
