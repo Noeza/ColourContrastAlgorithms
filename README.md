@@ -1,2 +1,0 @@
-# ColourContrastAlgorithms
-Created with CodeSandbox
