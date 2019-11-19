@@ -3,7 +3,7 @@ import { Color } from "./colorContrast";
 const MAX_BRIGHTNESS_DIFFERENCE = 125;
 const MAX_COLOR_DIFFERENCE = 500;
 
-/* The Color Contrast Algorith Starts here:
+/* The Color Contrast Algorithm Starts here:
   We calculate the color brightness and
   color difference
 */

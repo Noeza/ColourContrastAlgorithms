@@ -60,7 +60,7 @@ export const ColorContrast: FC = () => {
 
   return (
     <Container>
-      <h1>Colour Visibility Algorithms</h1>
+      <h1>Colour Contrast Algorithms</h1>
       <div style={{ display: "flex", flexDirection: "row" }}>
         <SketchPicker
           color={color}
@@ -79,11 +79,11 @@ export const ColorContrast: FC = () => {
           <BackgroundContainer color={color}>
             Hi I am the foreground text.
           </BackgroundContainer>
-          <p>Contrast Ratio - {ratio}: 1</p>
           <Paragraph valid={validRatio}>
             {validRatio ? "Great" : "Poor"} visibility between text and
             background colors.
           </Paragraph>
+          <p>Contrast Ratio - {ratio}: 1</p>
         </RightContainer>
       </div>
     </Container>
